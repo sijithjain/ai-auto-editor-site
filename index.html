@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Auto-Editor — Wedding Video Editing in Minutes, Not Days</title>
+  <meta name="description" content="AI-powered wedding video editing plugin for Adobe Premiere Pro. Go from 200 raw clips to a rough cut in 8 minutes. Free silence removal & captions. Pro auto-edit for ₹2,499/mo.">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0a0a0a; --surface: #141414; --elevated: #1a1a1a;
+      --accent: #00D4AA; --accent-dim: rgba(0,212,170,0.12);
+      --text: #e8e8e8; --muted: #888; --border: #222;
+      --font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.6; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Layout */
+    .container { max-width: 960px; margin: 0 auto; padding: 0 24px; }
+    section { padding: 80px 0; }
+
+    /* Nav */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(10,10,10,0.9); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    nav .container { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .logo { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 24px; align-items: center; }
+    .nav-links a { color: var(--muted); font-size: 14px; }
+    .nav-links a:hover { color: var(--text); text-decoration: none; }
+
+    /* Hero */
+    .hero { padding: 140px 0 80px; text-align: center; }
+    .hero h1 { font-size: clamp(32px, 5vw, 56px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 20px; }
+    .hero h1 .accent { color: var(--accent); }
+    .hero .subtitle { font-size: 18px; color: var(--muted); max-width: 600px; margin: 0 auto 32px; line-height: 1.5; }
+    .hero .cta-row { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* Buttons */
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; border: none; }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary:hover { background: #00e6b8; text-decoration: none; }
+    .btn-secondary { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-secondary:hover { border-color: var(--muted); text-decoration: none; }
+
+    /* Problem section */
+    .problem { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .problem h2 { font-size: 28px; font-weight: 700; margin-bottom: 32px; text-align: center; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 24px; }
+    .stat-card { background: var(--elevated); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; }
+    .stat-card .number { font-size: 36px; font-weight: 800; color: var(--accent); display: block; }
+    .stat-card .label { font-size: 14px; color: var(--muted); margin-top: 4px; }
+
+    /* Features */
+    .features h2 { font-size: 28px; font-weight: 700; margin-bottom: 12px; text-align: center; }
+    .features .section-sub { text-align: center; color: var(--muted); margin-bottom: 40px; }
+    .feature-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .feature-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; }
+    .feature-card .badge { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; padding: 3px 8px; border-radius: 4px; margin-bottom: 12px; }
+    .badge-free { background: rgba(0,212,170,0.15); color: var(--accent); }
+    .badge-pro { background: rgba(232,184,48,0.15); color: #E8B830; }
+    .feature-card h3 { font-size: 18px; font-weight: 600; margin-bottom: 8px; }
+    .feature-card p { font-size: 14px; color: var(--muted); line-height: 1.5; }
+
+    /* How it works */
+    .how { background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .how h2 { font-size: 28px; font-weight: 700; margin-bottom: 40px; text-align: center; }
+    .steps { display: flex; flex-direction: column; gap: 24px; max-width: 640px; margin: 0 auto; }
+    .step { display: flex; gap: 16px; align-items: flex-start; }
+    .step-num { flex-shrink: 0; width: 36px; height: 36px; background: var(--accent-dim); color: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; }
+    .step-text h3 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .step-text p { font-size: 14px; color: var(--muted); }
+
+    /* Pricing */
+    .pricing { text-align: center; }
+    .pricing h2 { font-size: 28px; font-weight: 700; margin-bottom: 12px; }
+    .pricing .section-sub { color: var(--muted); margin-bottom: 40px; }
+    .price-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; max-width: 700px; margin: 0 auto; }
+    .price-card { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 32px 24px; text-align: left; }
+    .price-card.featured { border-color: var(--accent); position: relative; }
+    .price-card.featured::before { content: 'MOST POPULAR'; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #000; font-size: 10px; font-weight: 700; padding: 2px 12px; border-radius: 4px; letter-spacing: 0.5px; }
+    .price-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+    .price-card .price { font-size: 36px; font-weight: 800; margin: 12px 0; }
+    .price-card .price .period { font-size: 14px; font-weight: 400; color: var(--muted); }
+    .price-card .price .original { font-size: 16px; color: var(--muted); text-decoration: line-through; margin-right: 8px; }
+    .price-card ul { list-style: none; margin: 16px 0 24px; }
+    .price-card ul li { font-size: 14px; padding: 6px 0; color: var(--muted); }
+    .price-card ul li::before { content: '✓'; color: var(--accent); margin-right: 8px; font-weight: 700; }
+
+    /* Footer */
+    footer { padding: 40px 0; border-top: 1px solid var(--border); text-align: center; }
+    footer p { font-size: 13px; color: var(--muted); }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .feature-grid, .price-cards { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="container">
+    <div class="logo">AI Auto<span>-Editor</span></div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#download" class="btn btn-primary" style="padding:8px 20px;font-size:13px">Download</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="container">
+    <h1>200 raw clips.<br><span class="accent">One rough cut.</span><br>8 minutes.</h1>
+    <p class="subtitle">AI-powered wedding video editing for Adobe Premiere Pro. Stop spending 50 hours per wedding. Let AI assemble your rough cut while you focus on the creative work.</p>
+    <div class="cta-row">
+      <a href="#download" class="btn btn-primary">Download Free Plugin</a>
+      <a href="#demo" class="btn btn-secondary">Watch Demo</a>
+    </div>
+  </div>
+</section>
+
+<section class="problem">
+  <div class="container">
+    <h2>The wedding editor's time crisis</h2>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="number">40-70h</span>
+        <span class="label">Editing hours per wedding</span>
+      </div>
+      <div class="stat-card">
+        <span class="number">200+</span>
+        <span class="label">Raw clips to sort through</span>
+      </div>
+      <div class="stat-card">
+        <span class="number">4-7 mo</span>
+        <span class="label">Average delivery backlog</span>
+      </div>
+      <div class="stat-card">
+        <span class="number">$500+</span>
+        <span class="label">Outsourcing cost per wedding</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="features" id="features">
+  <div class="container">
+    <h2>Everything you need, nothing you don't</h2>
+    <p class="section-sub">Free features work forever. Pro features need AI.</p>
+    <div class="feature-grid">
+      <div class="feature-card">
+        <span class="badge badge-free">Free Forever</span>
+        <h3>Silence Removal</h3>
+        <p>Three modes: markers, select regions, or auto-cut with ripple delete. Configurable threshold and padding. Works entirely on your machine.</p>
+      </div>
+      <div class="feature-card">
+        <span class="badge badge-free">Free Forever</span>
+        <h3>Auto Captions</h3>
+        <p>Word-level transcription via Whisper AI. Creates native caption tracks in Premiere Pro. Supports 50+ languages. GPU-accelerated.</p>
+      </div>
+      <div class="feature-card">
+        <span class="badge badge-pro">Pro</span>
+        <h3>Wedding Auto-Edit</h3>
+        <p>AI understands ceremony structure: vows, kiss, speeches, first dance. Assembles a rough cut on your timeline with real clip references and beat labels.</p>
+      </div>
+      <div class="feature-card">
+        <span class="badge badge-pro">Pro</span>
+        <h3>Natural Language Revision</h3>
+        <p>"Focus only on the vows." "Make the ceremony shorter." "Cut the slow intro." Type what you want, the AI revises the edit.</p>
+      </div>
+      <div class="feature-card">
+        <span class="badge badge-pro">Pro</span>
+        <h3>Wedding Sub-Modes</h3>
+        <p>Ceremony cut, reception cut, or highlight reel — each with specialized AI that knows what matters for that deliverable.</p>
+      </div>
+      <div class="feature-card">
+        <span class="badge badge-pro">Pro</span>
+        <h3>Full Wedding Prep</h3>
+        <p>One button: silence removal + auto-edit. Cleans dead air first, then assembles the rough cut from the cleaned transcript.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:var(--surface);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+  <div class="container">
+    <h2 style="font-size:28px;font-weight:700;margin-bottom:12px;text-align:center">Built for Indian Weddings</h2>
+    <p style="text-align:center;color:var(--muted);margin-bottom:32px">The only AI editor that understands multi-day Indian ceremonies.</p>
+    <div class="stats-grid">
+      <div class="stat-card">
+        <span class="number">10M+</span>
+        <span class="label">Indian weddings per year</span>
+      </div>
+      <div class="stat-card">
+        <span class="number">2-5</span>
+        <span class="label">Days of ceremonies</span>
+      </div>
+      <div class="stat-card">
+        <span class="number">20+</span>
+        <span class="label">Hours of raw footage</span>
+      </div>
+      <div class="stat-card">
+        <span class="number">0</span>
+        <span class="label">Competitors who handle this</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:32px">
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:20px">
+        <h3 style="font-size:16px;margin-bottom:8px;color:var(--accent)">Events We Understand</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Mehendi &middot; Sangeet &middot; Haldi &middot; Baraat &middot; Milni &middot;
+          Jaimala &middot; Pheras &middot; Kanyadaan &middot; Sindoor &middot; Mangalsutra &middot;
+          Vidai &middot; Reception &middot; First Dance &middot; Speeches
+        </p>
+      </div>
+      <div style="background:var(--elevated);border:1px solid var(--border);border-radius:12px;padding:20px">
+        <h3 style="font-size:16px;margin-bottom:8px;color:var(--accent)">What the AI Knows</h3>
+        <p style="font-size:13px;color:var(--muted);line-height:1.7">
+          Pheras are sacred (importance 10). Vidai brings tears. Baraat is pure energy.
+          Sangeet performances deserve their own beat. Kanyadaan is where fathers cry.
+          The AI labels beats with the event names you already use.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="calculator" style="padding:60px 0">
+  <div class="container">
+    <h2 style="font-size:28px;font-weight:700;margin-bottom:12px;text-align:center">How much are you spending on editing?</h2>
+    <p style="text-align:center;color:var(--muted);margin-bottom:32px">See how much AI Auto-Editor saves you versus outsourcing.</p>
+    <div style="max-width:480px;margin:0 auto;background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:32px">
+      <div style="margin-bottom:16px">
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:4px">Weddings per month</label>
+        <input type="range" id="calc-weddings" min="1" max="20" value="4" style="width:100%">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>1</span><span id="calc-weddings-val" style="color:var(--accent);font-weight:700">4</span><span>20</span></div>
+      </div>
+      <div style="margin-bottom:24px">
+        <label style="font-size:13px;color:var(--muted);display:block;margin-bottom:4px">Outsourcing cost per wedding (INR)</label>
+        <input type="range" id="calc-cost" min="5000" max="50000" value="15000" step="1000" style="width:100%">
+        <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--muted)"><span>&#8377;5,000</span><span id="calc-cost-val" style="color:var(--accent);font-weight:700">&#8377;15,000</span><span>&#8377;50,000</span></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:20px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:14px;color:var(--muted)">Annual outsourcing cost</span>
+          <span id="calc-outsource" style="font-size:14px;font-weight:700;color:#F06060">&#8377;7,20,000</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:14px;color:var(--muted)">AI Auto-Editor Pro (annual)</span>
+          <span style="font-size:14px;font-weight:700;color:var(--accent)">&#8377;29,988</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid var(--border)">
+          <span style="font-size:16px;font-weight:700">You save</span>
+          <span id="calc-savings" style="font-size:20px;font-weight:800;color:var(--accent)">&#8377;6,90,012</span>
+        </div>
+        <p id="calc-pct" style="text-align:right;font-size:13px;color:var(--accent);margin-top:4px">95.8% cost reduction</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="demo">
+  <div class="container">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">
+          <h3>Import & Scan</h3>
+          <p>Import your wedding footage into Premiere Pro. Open the AI Auto-Editor panel and hit "Scan Project." The plugin reads all your clips.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">
+          <h3>Choose Your Mode</h3>
+          <p>Select "Wedding — Highlight Reel" for a 4-min reel, "Ceremony Only" for the full ceremony, or "Full Wedding" for everything. Set your target duration.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">
+          <h3>AI Assembles</h3>
+          <p>The local daemon transcribes audio. Claude AI identifies vows, speeches, key moments. In 5-10 minutes, a rough cut appears on your timeline.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">
+          <h3>Refine & Deliver</h3>
+          <p>Review the AI's beat labels. Revise with natural language. Then add your creative touch — color, music, transitions. Deliver in hours, not weeks.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing" id="pricing">
+  <div class="container">
+    <h2>Simple pricing. No surprises.</h2>
+    <p class="section-sub">Free features are really free. Pro features are really worth it.</p>
+    <div class="price-cards">
+      <div class="price-card">
+        <h3>Free</h3>
+        <div class="price">₹0 <span class="period">/ forever</span></div>
+        <ul>
+          <li>Silence removal (all 3 modes)</li>
+          <li>Auto captions (50+ languages)</li>
+          <li>GPU-accelerated transcription</li>
+          <li>Unlimited usage</li>
+          <li>No account required</li>
+        </ul>
+        <a href="#download" class="btn btn-secondary" style="width:100%;justify-content:center">Download Free</a>
+      </div>
+      <div class="price-card featured">
+        <h3>Pro</h3>
+        <div class="price">
+          ₹2,499 <span class="period">/ month</span>
+        </div>
+        <ul>
+          <li>Everything in Free</li>
+          <li>Wedding Auto-Edit (AI rough cut)</li>
+          <li>Natural language revision</li>
+          <li>Ceremony / Reception / Highlight modes</li>
+          <li>Full Wedding Prep (one-click)</li>
+          <li>Pacing & emphasis preferences</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="#" id="btn-subscribe" class="btn btn-primary" style="width:100%;justify-content:center">Subscribe — ₹2,499/mo</a>
+      </div>
+    </div>
+    <p style="margin-top:24px;font-size:13px;color:var(--muted)">
+      ₹2,499/mo ≈ $30/mo. Cancel anytime. No contracts.<br>
+      You spend ₹25,000+ outsourcing ONE wedding. This covers unlimited weddings.
+    </p>
+  </div>
+</section>
+
+<section id="download" style="text-align:center">
+  <div class="container">
+    <h2>Get started in 2 minutes</h2>
+    <p class="section-sub" style="color:var(--muted);margin-bottom:32px">Works with Adobe Premiere Pro v25.0+. Windows & macOS.</p>
+    <div style="display:flex;gap:16px;justify-content:center;flex-wrap:wrap">
+      <a href="#" class="btn btn-primary">Download Plugin (.ccx)</a>
+      <a href="#" class="btn btn-secondary">Download Daemon (Windows)</a>
+      <a href="#" class="btn btn-secondary">Download Daemon (macOS)</a>
+    </div>
+    <p style="margin-top:16px;font-size:13px;color:var(--muted)">
+      The plugin needs the local daemon for audio processing. Install both.
+    </p>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <p>AI Auto-Editor &copy; 2026. Made for wedding videographers who'd rather be filming than editing.</p>
+  </div>
+</footer>
+
+<script>
+  // Outsourcing calculator
+  (function() {
+    var wedEl = document.getElementById('calc-weddings');
+    var costEl = document.getElementById('calc-cost');
+    if (!wedEl || !costEl) return;
+    function fmt(n) { return n.toLocaleString('en-IN'); }
+    function update() {
+      var w = parseInt(wedEl.value);
+      var c = parseInt(costEl.value);
+      var annual = w * c * 12;
+      var aiCost = 2499 * 12;
+      var savings = annual - aiCost;
+      var pct = ((savings / annual) * 100).toFixed(1);
+      document.getElementById('calc-weddings-val').textContent = w;
+      document.getElementById('calc-cost-val').textContent = '\u20B9' + fmt(c);
+      document.getElementById('calc-outsource').textContent = '\u20B9' + fmt(annual);
+      document.getElementById('calc-savings').textContent = '\u20B9' + fmt(Math.max(0, savings));
+      document.getElementById('calc-pct').textContent = savings > 0 ? pct + '% cost reduction' : 'AI Auto-Editor is cheaper!';
+    }
+    wedEl.addEventListener('input', update);
+    costEl.addEventListener('input', update);
+    update();
+  })();
+
+  // Razorpay checkout integration
+  document.getElementById('btn-subscribe').addEventListener('click', function(e) {
+    e.preventDefault();
+    if (typeof Razorpay === 'undefined') {
+      alert('Payment system loading. Please try again in a moment.');
+      return;
+    }
+    var options = {
+      key: '', // Set RAZORPAY_KEY_ID here
+      subscription_id: '', // Created server-side via Razorpay API
+      name: 'AI Auto-Editor',
+      description: 'Pro Plan — Monthly',
+      handler: function(response) {
+        // Send to your backend to verify and create API key
+        fetch('https://e-motion.up.railway.app/api/verify-payment', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_subscription_id: response.razorpay_subscription_id,
+            razorpay_signature: response.razorpay_signature
+          })
+        }).then(function(r) { return r.json(); })
+          .then(function(data) {
+            if (data.api_key) {
+              alert('Welcome! Your API key is: ' + data.api_key + '\n\nCopy this into the plugin Settings → Connection → API Key.');
+            }
+          });
+      },
+      prefill: { email: '' },
+      theme: { color: '#00D4AA' }
+    };
+    var rzp = new Razorpay(options);
+    rzp.open();
+  });
+</script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+</body>
+</html>
